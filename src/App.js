@@ -4,7 +4,6 @@ import {API_ID, API_KEY} from './key';
 function App() {
   let query = ""
   let recipe_url = `https://api.edamam.com/api/recipes/v2?type=public&q=${query}&app_id=${API_ID}&app_key=${API_KEY}`;
-// https://api.edamam.com/api/recipes/v2?type=public&q=cookie&app_id=c74766d1&app_key=f29f0fad4ba55d635f7b2db632946707
 
   
   /*
@@ -12,10 +11,16 @@ function App() {
    * Retrives a json file from the link
   */
   function getRecipe(){
+
+    //grabs the text inside the searchTextField element
+    query = document.getElementById("searchTextField");
+
     //request data from a server. The request can be of any type of API that returns the data in JSON
-    let result = fetch(recipe_url);
-  
-    console.log(result);
+    // let result = fetch(recipe_url);
+
+    
+    console.log(query);
+    // console.log(result);
   }
 
 
@@ -32,8 +37,9 @@ function App() {
       <body className="App-body">
 
         <form className='search_field'>
-          <input type="text" id="Search" name="Search" placeholder="Enter Ingridient"></input>
-          <button type="button" name="submit" onClick={getRecipe}>Search</button>
+          <input type="text" id="searchTextField" name="searchTextField" placeholder="Enter Search Query" size = "30" value =""></input>
+          {/* note In vanilla javascript you would probably have onclick="somefunctionname". But not in JSX, you need to pass a function as stated in the error. */}
+          <button id="search_button" onClick={getRecipe()} >Search</button>          
         </form>
 
 
