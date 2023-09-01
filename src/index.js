@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'; //imports a part of the react-dom packa
 import './index.css'; //imports a CSS file named "index.css" 
 import App from './App'; //imports the "App" component from "App.js"
 
-
 /*
 creates a "root" using the createRoot method from the react-dom package. 
 The createRoot function is used for the new Concurrent Mode in React.

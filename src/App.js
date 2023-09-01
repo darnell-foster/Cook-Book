@@ -1,59 +1,142 @@
 import './App.css';
 import {API_ID, API_KEY} from './key';
+import { useState } from 'react';
 
-function App() {
-  let query = ""
-  let recipe_url = `https://api.edamam.com/api/recipes/v2?type=public&q=${query}&app_id=${API_ID}&app_key=${API_KEY}`;
 
-  
+/*
+* App
+* The Parent for all react componets 
+*/
+function App(){
+
   /*
-   * Uses the text field from search as a query for the API URL above
-   * Retrives a json file from the link
+  * useState is a React Hook that lets you add a state variable to your component.
+  * State is like a component’s memory. 
+  * State is reserved only for interactivity, that is, data that changes over time
+  * It lets a component keep track of some information and change it in response to interactions. 
+  * A parent component will often keep some information in state (so that it can change it), and pass it down to child components as their props.
+  * Props are like arguments you pass
+  * They let a parent component pass data to a child component and customize its appearance.
+  * 
+  * Search Bar uses State becasue it needs to display search text 
   */
-  function getRecipe(){
-
-    //grabs the text inside the searchTextField element
-    query = document.getElementById("searchTextField");
-
-    //request data from a server. The request can be of any type of API that returns the data in JSON
-    // let result = fetch(recipe_url);
-
-    
-    console.log(query);
-    // console.log(result);
-  }
+  const [searchText, setSearchText] = useState('');
+  const [recipe, setRecipe] = useState(null);
+  let recipe_url = `https://api.edamam.com/api/recipes/v2?type=public&q=${searchText}&app_id=${API_ID}&app_key=${API_KEY}`;
 
 
-  //The componet being returned and rendered
-  return (
-    <div className="App">
+  // Returning a div that holds together all the componets using jsx syntax
+  return(
+    <>
+      <Header />
+      <SearchBar 
 
-      <header className="App-header">
-        <h2>
-          Cook-Book
-        </h2>
-      </header>
+        //passing searchText as a prop to SearchBar to be rendered
+        searchText = {searchText}
+        //The state is owned by App, so only it can call setSearchText and it must pass this function down toSearchBar
+        onSearchTextChange={setSearchText} 
+        recipe_url = {recipe_url}
+        onRecipeSearched = {setRecipe}
+      />
+      {/* <RecipeDashBoard /> */}
 
-      <body className="App-body">
-
-        <form className='search_field'>
-          <input type="text" id="searchTextField" name="searchTextField" placeholder="Enter Search Query" size = "30" value =""></input>
-          {/* note In vanilla javascript you would probably have onclick="somefunctionname". But not in JSX, you need to pass a function as stated in the error. */}
-          <button id="search_button" onClick={getRecipe()} >Search</button>          
-        </form>
-
-
-      </body>
-
-
-      {/* <footer>
-        <p>
-          Darnell Foster
-        </p>
-      </footer> */}
-
-    </div>
+    </>
   );
 }
 
+
+/*
+* SearchBar({searchText, onSearchTextChange})
+* 
+* Param
+* searchText - 
+* onSearchTextChange - 
+*/
+function SearchBar({searchText, onSearchTextChange, recipe_url}) {
+
+
+
+  return(
+
+    
+    <div className="App-body">
+      <form className='searchBar'>
+
+        <input 
+          type="text" 
+          id="searchTextField" 
+          name="searchTextField" 
+          placeholder="Search..." 
+          size = "30"
+          //SearchBar reads the searchText prop to render it
+          value= {searchText}
+          //the onChange event handler calls a arrow function which takes e(e is the event object passed into the event handler i.e. the change in HTML for this event) as an input and sends it into the onSearchTextChange function(from the useState hook) which sets the searchText value
+          onChange = {(e) => onSearchTextChange(e.target.value)}  
+          />  
+
+        <button 
+          id="search_button" 
+          onClick={ (e) => {
+            
+            /*
+            * without javascript (plain html), the form element submits when clicking either the <input type="submit" value="submit form"> or <button>submits form too</button>. 
+            * In javascript you can prevent that by using an event handler and calling e.preventDefault() on button click, or form submit. e is the event object passed into the event handler. 
+            * With react, the two relevant event handlers are available via the form as onSubmit, and the other on the button via onClick.
+            */
+            e.preventDefault();
+
+
+            // fetchResult = fetch(recipe_url)
+            // onRecipeSearched(fetchResult);
+
+
+            console.log(searchText);
+            console.log(recipe_url);
+
+
+            //resets the search bar so it's empty
+            onSearchTextChange("");
+
+            }
+          }
+        >
+          Search
+        </button>          
+
+      </form>
+    </div>
+
+  );
+}
+
+
+function RecipeDashBoard(){
+
+}
+
+
+
+
+
+
+
+/*
+* Header()
+* Just used as a header for the app
+*/
+function Header() {
+
+  return (
+
+    <div className="App-header">
+      <h2>
+        Cook-Book
+      </h2>
+    </div>
+
+  );
+}
+
+
+//The App is exported to index.js where it's renderd into the index.html
 export default App;
