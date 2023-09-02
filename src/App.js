@@ -29,19 +29,24 @@ function App(){
   return(
     <>
       <Header />
-      <SearchBar 
+      <div className='App-body'>
+        <SearchBar 
 
-        //passing searchText as a prop to SearchBar to be rendered
-        searchText = {searchText}
-        //The state is owned by App, so only it can call setSearchText and it must pass this function down toSearchBar
-        onSearchTextChange={setSearchText} 
-        recipe_url = {recipe_url}
-        onRecipeSearched = {setRecipeResults}
-      />
+          //passing searchText as a prop to SearchBar to be rendered
+          searchText = {searchText}
+          //The state is owned by App, so only it can call setSearchText and it must pass this function down toSearchBar
+          onSearchTextChange={setSearchText} 
+          recipe_url = {recipe_url}
+          onRecipeSearched = {setRecipeResults}
+        />
+        <RecipeTileBoard 
+          recipeResults = {recipeResults}
+        />
+      </div>
       
-      <RecipeTileBoard 
-        recipeResults = {recipeResults}
-      />
+      <div className='App-footer'>
+
+      </div>
 
     </>
   );
@@ -133,6 +138,7 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
 
 
 /*
+* The Componet for the tile grid
 *
 */
 function RecipeTileBoard({recipeResults}){
@@ -155,9 +161,10 @@ function RecipeTileBoard({recipeResults}){
 
 
 /*
+* The Componet for each individual Tile
 *
 */
- function RecipeTile({recipe}){
+function RecipeTile({recipe}){
 
   return (
     <div className='recipeTile'>
@@ -175,12 +182,17 @@ function RecipeTileBoard({recipeResults}){
     //   </div>
     // )
   );
- }
+}
 
 
 
+function nextPage(){
 
+}
 
+function filterSearch(){
+
+}
 
 
 
@@ -193,7 +205,7 @@ function Header() {
   return (
 
     <div className="App-header">
-      <h2>
+      <h2 className= "header-label">
         Cook-Book
       </h2>
     </div>

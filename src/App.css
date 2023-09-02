@@ -4,27 +4,44 @@
 }
 
 .App-header {
-  background-color: #ffffff;
-  min-height: 5vh;
+  background-color: #7C735F;
+  background-image: url('Banner.png');
+  background-attachment: fixed;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: #282c34;
+  height: 120px;
+}
+
+.header-label{
+  color: #f8faff;
   font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: 40px;
+  text-align: center;
+  text-decoration-line: underline;
+  text-decoration-color: #f8faff;
+  text-decoration-thickness: 5px;
+  
 }
 
 .App-body {
-  background-color: #7C735F;
+  background-color: #ffffff;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: #282c34;
+  justify-content: start;
 }
+
+.App-footer{
+  background-color: #282c34;
+  min-height: 0.5vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 70px;
+}
+
 
 .searchBar{
   display: flex;
