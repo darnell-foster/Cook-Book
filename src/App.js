@@ -52,15 +52,15 @@ function App(){
 * searchText - 
 * onSearchTextChange - 
 */
-function SearchBar({searchText, onSearchTextChange, recipe_url}) {
+function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched}) {
 
 
 
   return(
 
     
-    <div className="App-body">
-      <form className='searchBar'>
+    <div className="searchBar">
+      <form>
 
         <input 
           type="text" 
@@ -74,8 +74,8 @@ function SearchBar({searchText, onSearchTextChange, recipe_url}) {
           onChange = {(e) => onSearchTextChange(e.target.value)}  
           />  
 
-        <button 
-          id="search_button" 
+        <button className='search_button' 
+          id="searchButton" 
           onClick={ (e) => {
             
             /*
@@ -85,14 +85,33 @@ function SearchBar({searchText, onSearchTextChange, recipe_url}) {
             */
             e.preventDefault();
 
+            console.log('URL: '+ recipe_url);
+            console.log('User Search: '+ searchText);
 
-            // fetchResult = fetch(recipe_url)
-            // onRecipeSearched(fetchResult);
-
-
-            console.log(searchText);
-            console.log(recipe_url);
-
+            /*
+            * fetch method in JavaScript is used to request data from a server. The request can be of any type of API that returns the data in JSON or XML as a promise. 
+            * We start by checking that the response status is 200 before parsing the response as JSON.
+            * The then() method in JavaScript has been defined in the Promise API and is used to deal with asynchronous tasks such as an API call. 
+            * The response of a fetch() request is a Stream object, which means that when we call the json() method, a Promise is returned since the reading of the stream will happen asynchronously.
+            */
+            fetch(recipe_url).then(
+              function(response){
+                if (response.status != 200){
+                  console.log('Looks like there was a problem. Status Code: ' +
+                  response.status);
+                  return;
+                }
+                else{
+                  response.json().then(function(data) {
+                    console.log(data);
+                    onRecipeSearched(data);
+                  });
+                }
+              }
+            ).catch(function(err){
+              console.log('fetch Error :-S', err);
+            });
+            
 
             //resets the search bar so it's empty
             onSearchTextChange("");
@@ -109,6 +128,16 @@ function SearchBar({searchText, onSearchTextChange, recipe_url}) {
   );
 }
 
+function RecipeTile(){
+
+  return (
+    <>
+      
+    
+    
+    </>
+  );
+}
 
 function RecipeDashBoard(){
 
