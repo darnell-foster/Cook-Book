@@ -24,6 +24,7 @@ function App(){
   const [recipeResults, setRecipeResults] = useState(null);
   const [nextPageLink, setNextPageLink]  = useState('');
   const [prevPageLink, setPrevPageLink]  = useState('');
+  const [mealTypes, setMealTypes]  = useState('mealTypes');
 
   let recipe_url = `https://api.edamam.com/api/recipes/v2?type=public&q=${searchText}&app_id=${API_ID}&app_key=${API_KEY}`;
 
@@ -42,6 +43,7 @@ function App(){
           recipe_url = {recipe_url}
           onRecipeSearched = {setRecipeResults}
           onNextPageLinkFound = {setNextPageLink}
+          onMealTypesChoosen = {setMealTypes}
         />
         <RecipeTileBoard 
           recipeResults = {recipeResults}
@@ -64,9 +66,7 @@ function App(){
 * searchText - 
 * onSearchTextChange - 
 */
-function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched, onNextPageLinkFound}) {
-
-
+function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched, onNextPageLinkFound, onMealTypesChoosen}) {
 
   return(
 
@@ -86,10 +86,13 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
           onChange = {(e) => onSearchTextChange(e.target.value)}  
           />  
 
-        <select className='filter_search'>
-          <option>
-            
-          </option>
+        <select className='meal_types'>
+          <option>  type... </option>
+          <option  value ="breakfast" onClick={() => { onMealTypesChoosen("breakfast")}}> breakfast </option>
+          <option  value ="brunch" onClick={() => { onMealTypesChoosen("brunch")}}> brunch </option>
+          <option  value ="lunch/dinner" onClick={() => { onMealTypesChoosen("lunch/dinner")}}> lunch/dinner </option>
+          <option  value ="snack" onClick={() => { onMealTypesChoosen("snack")}}> snack </option>
+          <option  value ="teatime" onClick={() => { onMealTypesChoosen("teatime")}}> teatime </option>
         </select>
 
         <button className='search_button' 
@@ -206,11 +209,11 @@ function RecipeTile({recipe}){
 
 
 
-function nextPage(){
+function NextPage(){
   
 }
 
-function filterSearch(){
+function MealTypes(){
 
 }
 
