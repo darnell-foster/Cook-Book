@@ -21,7 +21,7 @@ function App(){
   * Search Bar uses State becasue it needs to display search text 
   */
   const [searchText, setSearchText] = useState('');
-  const [recipe, setRecipe] = useState(null);
+  const [recipeResults, setRecipeResults] = useState(null);
   let recipe_url = `https://api.edamam.com/api/recipes/v2?type=public&q=${searchText}&app_id=${API_ID}&app_key=${API_KEY}`;
 
 
@@ -36,9 +36,12 @@ function App(){
         //The state is owned by App, so only it can call setSearchText and it must pass this function down toSearchBar
         onSearchTextChange={setSearchText} 
         recipe_url = {recipe_url}
-        onRecipeSearched = {setRecipe}
+        onRecipeSearched = {setRecipeResults}
       />
-      {/* <RecipeDashBoard /> */}
+      
+      <RecipeDashBoard 
+        recipeResults = {recipeResults}
+      />
 
     </>
   );
@@ -96,7 +99,7 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
             */
             fetch(recipe_url).then(
               function(response){
-                if (response.status != 200){
+                if (response.status != 200){ //if the reponse wasn't a 200(ok) then print error code
                   console.log('Looks like there was a problem. Status Code: ' +
                   response.status);
                   return;
@@ -104,11 +107,11 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
                 else{
                   response.json().then(function(data) {
                     console.log(data);
-                    onRecipeSearched(data);
+                    onRecipeSearched(Object.assign([], data.hits)); //sets recipeResults to any array copy of just the recipe (new page link it lost)
                   });
                 }
               }
-            ).catch(function(err){
+            ).catch(function(err){ //if the fetch method didn't work catch it and print error code
               console.log('fetch Error :-S', err);
             });
             
@@ -128,20 +131,34 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
   );
 }
 
-function RecipeTile(){
+function RecipeDashBoard({recipeResults}){
 
-  return (
-    <>
+  if (recipeResults != null){
+
+    //to display multiple similar components from a collection of data (an array) use map() <ul> 
+      //map() creates a new array from calling a function for every array element.
+    const listItems = recipeResults.map( item => {
+      return <p> {item.recipe.label}</p>
+    })
+
+    return <ul>{listItems}</ul>
+  }
+}
+
+
+// function RecipeTile({recipe}){
+
+
+
+//   return (
+//     <>
       
     
     
-    </>
-  );
-}
+//     </>
+//   );
+// }
 
-function RecipeDashBoard(){
-
-}
 
 
 
