@@ -22,6 +22,9 @@ function App(){
   */
   const [searchText, setSearchText] = useState('');
   const [recipeResults, setRecipeResults] = useState(null);
+  const [nextPageLink, setNextPageLink]  = useState('');
+  const [prevPageLink, setPrevPageLink]  = useState('');
+
   let recipe_url = `https://api.edamam.com/api/recipes/v2?type=public&q=${searchText}&app_id=${API_ID}&app_key=${API_KEY}`;
 
 
@@ -38,6 +41,7 @@ function App(){
           onSearchTextChange={setSearchText} 
           recipe_url = {recipe_url}
           onRecipeSearched = {setRecipeResults}
+          onNextPageLinkFound = {setNextPageLink}
         />
         <RecipeTileBoard 
           recipeResults = {recipeResults}
@@ -60,7 +64,7 @@ function App(){
 * searchText - 
 * onSearchTextChange - 
 */
-function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched}) {
+function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched, onNextPageLinkFound}) {
 
 
 
@@ -81,6 +85,12 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
           //the onChange event handler calls a arrow function which takes e(e is the event object passed into the event handler i.e. the change in HTML for this event) as an input and sends it into the onSearchTextChange function(from the useState hook) which sets the searchText value
           onChange = {(e) => onSearchTextChange(e.target.value)}  
           />  
+
+        <select className='filter_search'>
+          <option>
+            
+          </option>
+        </select>
 
         <button className='search_button' 
           id="searchButton" 
@@ -112,6 +122,7 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
                 else{
                   response.json().then(function(data) {
                     console.log(data);
+                    if (data._links.next != null) onNextPageLinkFound(data._links.next); //sets the next page link
                     onRecipeSearched(Object.assign([], data.hits)); //sets recipeResults to any array copy of just the recipe (new page link it lost)
                   });
                 }
@@ -129,7 +140,7 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
         >
           Search
         </button>          
-
+        
       </form>
     </div>
 
@@ -148,13 +159,25 @@ function RecipeTileBoard({recipeResults}){
     //to display multiple similar components from a collection of data (an array) use map() 
     //map() creates a new array from calling a function for every array element.
     return(
-      <div className='recipe_tile_board'>
-        {
-          recipeResults.map( (item) => {
-            return <RecipeTile recipe={item.recipe}/>
-          })
-        }
-      </div>
+
+      <>
+        <div>
+          <button className='nextPage_button'>
+              Prev Page
+          </button>
+          <button className='nextPage_button'>
+              Next Page
+          </button>
+        </div>
+        <div className='recipe_tile_board'>
+          {
+            recipeResults.map( (item) => {
+              return <RecipeTile recipe={item.recipe}/>
+            })
+          }
+        </div>
+      </>
+      
     );    
   }
 }
@@ -166,6 +189,7 @@ function RecipeTileBoard({recipeResults}){
 */
 function RecipeTile({recipe}){
 
+  // recipe.image.match(/\.(jpeg|jpg|gif|png)$/) != null && ( //if the image is not of the formats in the regex don't show the recipe
   return (
     <div className='recipeTile'>
         <img className = "recipeTile__img" src = {recipe.image} />
@@ -175,19 +199,15 @@ function RecipeTile({recipe}){
           </a>
         </p>
     </div>
-    // recipe.image.match(/\.(jpeg|jpg|gif|png)$/) != null && ( //if the image is not of the formats in the regex don't show the recipe
-    //   <div className='recipeTile'>
-    //     <img className = "recipeTile__img" src = {recipe.image} />
-    //     <p className = "recipeTile__name">{recipe.label}</p>
-    //   </div>
-    // )
+  // )
+
   );
 }
 
 
 
 function nextPage(){
-
+  
 }
 
 function filterSearch(){
