@@ -39,7 +39,7 @@ function App(){
         onRecipeSearched = {setRecipeResults}
       />
       
-      <RecipeDashBoard 
+      <RecipeTileBoard 
         recipeResults = {recipeResults}
       />
 
@@ -131,33 +131,51 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
   );
 }
 
-function RecipeDashBoard({recipeResults}){
+
+/*
+*
+*/
+function RecipeTileBoard({recipeResults}){
 
   if (recipeResults != null){
 
-    //to display multiple similar components from a collection of data (an array) use map() <ul> 
-      //map() creates a new array from calling a function for every array element.
-    const listItems = recipeResults.map( item => {
-      return <p> {item.recipe.label}</p>
-    })
-
-    return <ul>{listItems}</ul>
+    //to display multiple similar components from a collection of data (an array) use map() 
+    //map() creates a new array from calling a function for every array element.
+    return(
+      <div className='recipe_tile_board'>
+        {
+          recipeResults.map( (item) => {
+            return <RecipeTile recipe={item.recipe}/>
+          })
+        }
+      </div>
+    );    
   }
 }
 
 
-// function RecipeTile({recipe}){
+/*
+*
+*/
+ function RecipeTile({recipe}){
 
-
-
-//   return (
-//     <>
-      
-    
-    
-//     </>
-//   );
-// }
+  return (
+    <div className='recipeTile'>
+        <img className = "recipeTile__img" src = {recipe.image} />
+        <p className = "recipeTile__name">
+          <a href={recipe.url}>
+          {recipe.label}
+          </a>
+        </p>
+    </div>
+    // recipe.image.match(/\.(jpeg|jpg|gif|png)$/) != null && ( //if the image is not of the formats in the regex don't show the recipe
+    //   <div className='recipeTile'>
+    //     <img className = "recipeTile__img" src = {recipe.image} />
+    //     <p className = "recipeTile__name">{recipe.label}</p>
+    //   </div>
+    // )
+  );
+ }
 
 
 
