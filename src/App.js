@@ -44,6 +44,9 @@ function App(){
         />
         <RecipeTileBoard 
           recipeResults = {recipeResults}
+          nextPageLink = {nextPageLink}
+          onNextPageClicked = {setPrevPageLink}
+          prevPageLink = {prevPageLink}
         />
       </div>
       
@@ -120,31 +123,32 @@ function SearchBar({searchText, onSearchTextChange, onRecipeSearched, onNextPage
                 console.log("URL CHANGED: "+ recipe_url);
               }
 
-              /*
-              * fetch method in JavaScript is used to request data from a server. The request can be of any type of API that returns the data in JSON or XML as a promise. 
-              * We start by checking that the response status is 200 before parsing the response as JSON.
-              * The then() method in JavaScript has been defined in the Promise API and is used to deal with asynchronous tasks such as an API call. 
-              * The response of a fetch() request is a Stream object, which means that when we call the json() method, a Promise is returned since the reading of the stream will happen asynchronously.
-              */
-              fetch(recipe_url).then(
-                function(response){
-                  if (response.status != 200){ //if the reponse wasn't a 200(ok) then print error code
-                    console.log('Looks like there was a problem. Status Code: ' + response.status);
-                    onRecipeSearched("None");
-                    return;
-                  }
-                  else{
-                    response.json().then(function(data) {
-                      console.log(data);
-                      if (data._links.next != null) onNextPageLinkFound(data._links.next); //sets the next page link
-                      onRecipeSearched(Object.assign([], data.hits)); //sets recipeResults to any array copy of just the recipe (new page link it lost)
-                    });
-                  }
-                }
-              ).catch(function(err){ //if the fetch method didn't work catch it and print error code
-                console.log('fetch Error :-S', err);
-              });
+              // /* TODO: delete this because it was moved into a function
+              // * fetch method in JavaScript is used to request data from a server. The request can be of any type of API that returns the data in JSON or XML as a promise. 
+              // * We start by checking that the response status is 200 before parsing the response as JSON.
+              // * The then() method in JavaScript has been defined in the Promise API and is used to deal with asynchronous tasks such as an API call. 
+              // * The response of a fetch() request is a Stream object, which means that when we call the json() method, a Promise is returned since the reading of the stream will happen asynchronously.
+              // */
+              // fetch(recipe_url).then(
+              //   function(response){
+              //     if (response.status != 200){ //if the reponse wasn't a 200(ok) then print error code
+              //       console.log('Looks like there was a problem. Status Code: ' + response.status);
+              //       onRecipeSearched("None");
+              //       return;
+              //     }
+              //     else{
+              //       response.json().then(function(data) {
+              //         console.log(data);
+              //         if (data._links.next != null) onNextPageLinkFound(data._links.next);
+              //         onRecipeSearched(Object.assign([], data.hits)); //sets recipeResults to any array copy of just the recipe (new page link it lost)
+              //       });
+              //     }
+              //   }
+              // ).catch(function(err){ //if the fetch method didn't work catch it and print error code
+              //   console.log('fetch Error :-S', err);
+              // });
               
+              send_fetch_request(recipe_url, onRecipeSearched, onNextPageLinkFound);
 
               //resets the search bar so it's empty
               onSearchTextChange("");
@@ -159,6 +163,47 @@ function SearchBar({searchText, onSearchTextChange, onRecipeSearched, onNextPage
 
   );
 }
+
+
+
+/*TODO: get this to work 
+* The function used to send a fetch request to the api database
+*
+* param
+* url - the url used for the the fetch request
+* onRecipeSearched - used to change the recipeResults prop
+* onNextPageLinkFound - 
+*/
+function send_fetch_request(recipe_url, onRecipeSearched, onNextPageLinkFound){
+
+  /*
+  * fetch method in JavaScript is used to request data from a server. The request can be of any type of API that returns the data in JSON or XML as a promise. 
+  * We start by checking that the response status is 200 before parsing the response as JSON.
+  * The then() method in JavaScript has been defined in the Promise API and is used to deal with asynchronous tasks such as an API call. 
+  * The response of a fetch() request is a Stream object, which means that when we call the json() method, a Promise is returned since the reading of the stream will happen asynchronously.
+  */
+  fetch(recipe_url).then(
+    function(response){
+      if (response.status != 200){ //if the reponse wasn't a 200(ok) then print error code
+        console.log('Looks like there was a problem. Status Code: ' + response.status);
+        onRecipeSearched("None");
+        return;
+      }
+      else{
+        response.json().then(function(data) {
+          console.log(data);
+          if (data._links.next != null) onNextPageLinkFound(data._links.next);
+          onRecipeSearched(Object.assign([], data.hits)); //sets recipeResults to any array copy of just the recipe (new page link it lost)
+        });
+      }
+    }
+  ).catch(function(err){ //if the fetch method didn't work catch it and print error code
+    console.log('fetch Error :-S', err);
+  });
+  
+}
+
+
 
 
 /*
@@ -190,7 +235,7 @@ function Select_bar({onMealTypesChoosen, mealTypes}){
 }
 
 
-/*
+/*TODO:add the next and prev button
 * The Componet for the tile grid
 * Renders the grid of items based on the search 
 * if none is found will return a heading saying this
@@ -198,7 +243,7 @@ function Select_bar({onMealTypesChoosen, mealTypes}){
 * Param
 * recipeResults - The prop containg the array of recipes
 */
-function RecipeTileBoard({recipeResults}){
+function RecipeTileBoard({recipeResults, nextPageLink, onNextPageClicked, prevPageLink}){
 
   if (recipeResults != null && recipeResults != "None"){
 
@@ -231,6 +276,7 @@ function RecipeTileBoard({recipeResults}){
     );
   }
 }
+
 
 
 /*
