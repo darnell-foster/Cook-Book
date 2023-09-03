@@ -134,31 +134,6 @@ function SearchBar({searchText, onSearchTextChange, onRecipeSearched, ShowChange
                 recipe_url = (recipe_url + `&mealType=${mealTypes}`);
                 console.log("URL CHANGED: "+ recipe_url);
               }
-
-              // /* TODO: delete this because it was moved into a function
-              // * fetch method in JavaScript is used to request data from a server. The request can be of any type of API that returns the data in JSON or XML as a promise. 
-              // * We start by checking that the response status is 200 before parsing the response as JSON.
-              // * The then() method in JavaScript has been defined in the Promise API and is used to deal with asynchronous tasks such as an API call. 
-              // * The response of a fetch() request is a Stream object, which means that when we call the json() method, a Promise is returned since the reading of the stream will happen asynchronously.
-              // */
-              // fetch(recipe_url).then(
-              //   function(response){
-              //     if (response.status != 200){ //if the reponse wasn't a 200(ok) then print error code
-              //       console.log('Looks like there was a problem. Status Code: ' + response.status);
-              //       onRecipeSearched("None");
-              //       return;
-              //     }
-              //     else{
-              //       response.json().then(function(data) {
-              //         console.log(data);
-              //         if (data._links.next != null) onNextPageLinkFound(data._links.next);
-              //         onRecipeSearched(Object.assign([], data.hits)); //sets recipeResults to any array copy of just the recipe (new page link it lost)
-              //       });
-              //     }
-              //   }
-              // ).catch(function(err){ //if the fetch method didn't work catch it and print error code
-              //   console.log('fetch Error :-S', err);
-              // });
               
               send_fetch_request(recipe_url, onRecipeSearched, setNextPageLink, setShowChangePageButtons);
 
@@ -205,7 +180,7 @@ function SearchBar({searchText, onSearchTextChange, onRecipeSearched, ShowChange
 * param
 * url - the url used for the the fetch request
 * onRecipeSearched - used to change the recipeResults prop
-* setNextPageLink - 
+* setNextPageLink - used to set the onRecipeSearched prop
 */
 function send_fetch_request(recipe_url, onRecipeSearched, setNextPageLink, setShowChangePageButtons){
 
