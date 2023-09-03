@@ -1,3 +1,5 @@
+//TODO: Add a prev page button (maybe use a stack)
+
 import './App.css';
 import {API_ID, API_KEY} from './key';
 import { useState } from 'react';
@@ -23,14 +25,6 @@ function App(){
   const [searchText, setSearchText] = useState('');
   const [recipeResults, setRecipeResults] = useState(null);
   const [ShowChangePageButtons, setShowChangePageButtons]  = useState(false);
-
-  // const [prevPageLink, setPrevPageLink]  = useState('');
-  // const [pageTracker, setPageTracker]  = useState(1);
-
-
-  // const [recipe_url, setRecipe_url] = useState(`https://api.edamam.com/api/recipes/v2?type=public&q=${searchText}&app_id=${API_ID}&app_key=${API_KEY}`);
-
-
 
   // Returning a div that holds together all the componets using jsx syntax
   return(
@@ -87,7 +81,7 @@ function SearchBar({searchText, onSearchTextChange, onRecipeSearched, ShowChange
 
   // used for page buttons
   const [nextPageLink, setNextPageLink]  = useState('');
-  const [prevPageLink, setPrevPageLink]  = useState('');
+  // const [prevPageLink, setPrevPageLink]  = useState([]);
 
 
   return(
