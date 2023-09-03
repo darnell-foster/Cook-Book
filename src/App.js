@@ -22,8 +22,12 @@ function App(){
   */
   const [searchText, setSearchText] = useState('');
   const [recipeResults, setRecipeResults] = useState(null);
-  const [nextPageLink, setNextPageLink]  = useState('');
-  const [prevPageLink, setPrevPageLink]  = useState('');
+  const [ShowChangePageButtons, setShowChangePageButtons]  = useState(false);
+
+  // const [prevPageLink, setPrevPageLink]  = useState('');
+  // const [pageTracker, setPageTracker]  = useState(1);
+
+
   // const [recipe_url, setRecipe_url] = useState(`https://api.edamam.com/api/recipes/v2?type=public&q=${searchText}&app_id=${API_ID}&app_key=${API_KEY}`);
 
 
@@ -40,13 +44,13 @@ function App(){
           //The state is owned by App, so only it can call setSearchText and it must pass this function down toSearchBar
           onSearchTextChange={setSearchText} 
           onRecipeSearched = {setRecipeResults}
-          onNextPageLinkFound = {setNextPageLink}
+          ShowChangePageButtons = {ShowChangePageButtons}
+          setShowChangePageButtons = {setShowChangePageButtons}
         />
+
         <RecipeTileBoard 
           recipeResults = {recipeResults}
-          nextPageLink = {nextPageLink}
-          onNextPageClicked = {setPrevPageLink}
-          prevPageLink = {prevPageLink}
+          setShowChangePageButtons = {setShowChangePageButtons}
         />
       </div>
       
@@ -70,12 +74,20 @@ function App(){
 * searchText - Used to store the data on what the user searches in the text field
 * onSearchTextChange - used to change the searchText prop
 * onRecipeSearched - used to change the recipeResults prop
-* onNextPageLinkFound - 
+* ShowChangePageButtons - prop holds the state true or false for showing the page buttons
+* setShowChangePageButtons - sets the ShowChangePageButtons props state
 */
-function SearchBar({searchText, onSearchTextChange, onRecipeSearched, onNextPageLinkFound}) {
+function SearchBar({searchText, onSearchTextChange, onRecipeSearched, ShowChangePageButtons, setShowChangePageButtons}) {
 
+  //url for API
   let recipe_url = `https://api.edamam.com/api/recipes/v2?type=public&q=${searchText}&app_id=${API_ID}&app_key=${API_KEY}`;
+
+  // state prop used for meal type drop down (search attribute)
   const [mealTypes, setMealTypes]  = useState('');
+
+  // used for page buttons
+  const [nextPageLink, setNextPageLink]  = useState('');
+  const [prevPageLink, setPrevPageLink]  = useState('');
 
 
   return(
@@ -148,7 +160,7 @@ function SearchBar({searchText, onSearchTextChange, onRecipeSearched, onNextPage
               //   console.log('fetch Error :-S', err);
               // });
               
-              send_fetch_request(recipe_url, onRecipeSearched, onNextPageLinkFound);
+              send_fetch_request(recipe_url, onRecipeSearched, setNextPageLink, setShowChangePageButtons);
 
               //resets the search bar so it's empty
               onSearchTextChange("");
@@ -157,8 +169,28 @@ function SearchBar({searchText, onSearchTextChange, onRecipeSearched, onNextPage
         >
           Search
         </button>          
-        
       </form>
+      
+      <div>
+        {/* <ChangePage_button
+          ShowChangePageButtons  = {ShowChangePageButtons}
+          setShowChangePageButtons = {setShowChangePageButtons}
+          setNextPageLink = {setNextPageLink}
+          onRecipeSearched = {onRecipeSearched}
+          label = {'prev'}
+          pageLink = {prevPageLink}
+        /> */}
+
+        <ChangePage_button
+          label = {'next'}
+          ShowChangePageButtons  = {ShowChangePageButtons}
+          setShowChangePageButtons = {setShowChangePageButtons}
+          setNextPageLink = {setNextPageLink}
+          onRecipeSearched= {onRecipeSearched}
+          pageLink = {nextPageLink}
+        />
+      </div>
+
     </div>
 
   );
@@ -166,15 +198,16 @@ function SearchBar({searchText, onSearchTextChange, onRecipeSearched, onNextPage
 
 
 
-/*TODO: get this to work 
+
+/*
 * The function used to send a fetch request to the api database
 *
 * param
 * url - the url used for the the fetch request
 * onRecipeSearched - used to change the recipeResults prop
-* onNextPageLinkFound - 
+* setNextPageLink - 
 */
-function send_fetch_request(recipe_url, onRecipeSearched, onNextPageLinkFound){
+function send_fetch_request(recipe_url, onRecipeSearched, setNextPageLink, setShowChangePageButtons){
 
   /*
   * fetch method in JavaScript is used to request data from a server. The request can be of any type of API that returns the data in JSON or XML as a promise. 
@@ -187,13 +220,15 @@ function send_fetch_request(recipe_url, onRecipeSearched, onNextPageLinkFound){
       if (response.status != 200){ //if the reponse wasn't a 200(ok) then print error code
         console.log('Looks like there was a problem. Status Code: ' + response.status);
         onRecipeSearched("None");
+        setShowChangePageButtons(false);
         return;
       }
       else{
         response.json().then(function(data) {
           console.log(data);
-          if (data._links.next != null) onNextPageLinkFound(data._links.next);
+          if (data._links.next != null) setNextPageLink(data._links.next.href);
           onRecipeSearched(Object.assign([], data.hits)); //sets recipeResults to any array copy of just the recipe (new page link it lost)
+          setShowChangePageButtons(true);
         });
       }
     }
@@ -202,7 +237,6 @@ function send_fetch_request(recipe_url, onRecipeSearched, onNextPageLinkFound){
   });
   
 }
-
 
 
 
@@ -216,7 +250,7 @@ function send_fetch_request(recipe_url, onRecipeSearched, onNextPageLinkFound){
 * mealTypes - used to store the user entry for meal Type
 */
 function Select_bar({onMealTypesChoosen, mealTypes}){
-
+  
   return(
     <select 
       className='meal_types_select'
@@ -235,15 +269,38 @@ function Select_bar({onMealTypesChoosen, mealTypes}){
 }
 
 
-/*TODO:add the next and prev button
+
+//TODO: finish code for change page
+function ChangePage_button({label, ShowChangePageButtons, setShowChangePageButtons, pageLink, setNextPageLink, onRecipeSearched}){
+
+  if(ShowChangePageButtons) return(
+
+    <button 
+      className='changePage_button'
+      onClick={(e) =>{
+        e.preventDefault();        
+        
+        send_fetch_request(pageLink, onRecipeSearched , setNextPageLink , setShowChangePageButtons);
+      }}>
+      {label}
+    </button>
+  );
+
+  return null;
+}
+
+
+
+/*
 * The Componet for the tile grid
 * Renders the grid of items based on the search 
 * if none is found will return a heading saying this
 *
 * Param
 * recipeResults - The prop containg the array of recipes
+* setShowChangePageButtons - sets the ShowChangePageButtons props state
 */
-function RecipeTileBoard({recipeResults, nextPageLink, onNextPageClicked, prevPageLink}){
+function RecipeTileBoard({recipeResults, setShowChangePageButtons}){
 
   if (recipeResults != null && recipeResults != "None"){
 
@@ -252,14 +309,6 @@ function RecipeTileBoard({recipeResults, nextPageLink, onNextPageClicked, prevPa
     return(
 
       <>
-        <div>
-          <button className='prevPage_button'>
-              Prev Page
-          </button>
-          <button className='nextPage_button'>
-              Next Page
-          </button>
-        </div>
         <div className='recipe_tile_board'>
           {
             recipeResults.map( (item) => {
@@ -271,6 +320,7 @@ function RecipeTileBoard({recipeResults, nextPageLink, onNextPageClicked, prevPa
       
     );    
   }else if (recipeResults == "None"){
+    setShowChangePageButtons(false);
     return(
       <h1> NONE FOUND </h1>
     );
@@ -290,24 +340,22 @@ function RecipeTile({recipe}){
 
   // recipe.image.match(/\.(jpeg|jpg|gif|png)$/) != null && ( //if the image is not of the formats in the regex don't show the recipe
   return (
+
     <div className='recipeTile'>
         <img className = "recipeTile__img" src = {recipe.image} />
-        <p className = "recipeTile__name">
-          <a href={recipe.url}>
-          {recipe.label}
-          </a>
-        </p>
+        <div className = "recipeTile__nameBorder">
+          <p className = "recipeTile__name">
+            <a className = "recipeTile__name" href={recipe.url}>
+            {recipe.label}
+            </a>
+          </p>
+        </div>
     </div>
   // )
 
   );
 }
 
-
-
-function NextPage(){
-  
-}
 
 
 /*

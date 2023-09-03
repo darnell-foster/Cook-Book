@@ -4,7 +4,7 @@
 }
 
 .App-header {
-  background-color: #7C735F;
+  background-color: #E7E8E7;
   background-image: url('Banner.png');
   background-attachment: fixed;
   display: flex;
@@ -25,7 +25,7 @@
 }
 
 .App-body {
-  background-color: #c9b998;
+  background-color: #E7E8E7;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -84,6 +84,21 @@
   max-width: 200px;
   text-align: center;
   margin: 12px 0px;
+  color: #000000;
+}
+
+.recipeTile__name:link{
+  color: #000000;
+}
+
+.recipeTile__name:visited{
+  color: #000000;
+}
+
+.recipeTile__nameBorder{
+  border-radius: 25px;
+  background: #96AED0;
+  max-width: 200px;
 }
 
 .recipe_tile_board{
@@ -99,6 +114,21 @@
   margin-right: 4px;
   border-radius: 8px;
 }
+
+.changePage_button{
+  background-color: #282c34;
+  border: none;
+  color: white;
+  padding: 3px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 8px;
+  border: black;
+  font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
 
 
 /* Color Codes*/
