@@ -24,9 +24,8 @@ function App(){
   const [recipeResults, setRecipeResults] = useState(null);
   const [nextPageLink, setNextPageLink]  = useState('');
   const [prevPageLink, setPrevPageLink]  = useState('');
-  const [mealTypes, setMealTypes]  = useState('mealTypes');
+  // const [recipe_url, setRecipe_url] = useState(`https://api.edamam.com/api/recipes/v2?type=public&q=${searchText}&app_id=${API_ID}&app_key=${API_KEY}`);
 
-  let recipe_url = `https://api.edamam.com/api/recipes/v2?type=public&q=${searchText}&app_id=${API_ID}&app_key=${API_KEY}`;
 
 
   // Returning a div that holds together all the componets using jsx syntax
@@ -40,10 +39,8 @@ function App(){
           searchText = {searchText}
           //The state is owned by App, so only it can call setSearchText and it must pass this function down toSearchBar
           onSearchTextChange={setSearchText} 
-          recipe_url = {recipe_url}
           onRecipeSearched = {setRecipeResults}
           onNextPageLinkFound = {setNextPageLink}
-          onMealTypesChoosen = {setMealTypes}
         />
         <RecipeTileBoard 
           recipeResults = {recipeResults}
@@ -62,11 +59,21 @@ function App(){
 /*
 * SearchBar({searchText, onSearchTextChange})
 * 
+* This componet renders the user search field along with the button and drop down menu
+* When the button is pressed it sends a fetch request to the API database based on the user input for seach field and drop down
+* if the search field is left blank it will not send a request
+*
 * Param
-* searchText - 
-* onSearchTextChange - 
+* searchText - Used to store the data on what the user searches in the text field
+* onSearchTextChange - used to change the searchText prop
+* onRecipeSearched - used to change the recipeResults prop
+* onNextPageLinkFound - 
 */
-function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched, onNextPageLinkFound, onMealTypesChoosen}) {
+function SearchBar({searchText, onSearchTextChange, onRecipeSearched, onNextPageLinkFound}) {
+
+  let recipe_url = `https://api.edamam.com/api/recipes/v2?type=public&q=${searchText}&app_id=${API_ID}&app_key=${API_KEY}`;
+  const [mealTypes, setMealTypes]  = useState('');
+
 
   return(
 
@@ -84,16 +91,12 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
           value= {searchText}
           //the onChange event handler calls a arrow function which takes e(e is the event object passed into the event handler i.e. the change in HTML for this event) as an input and sends it into the onSearchTextChange function(from the useState hook) which sets the searchText value
           onChange = {(e) => onSearchTextChange(e.target.value)}  
-          />  
+        />  
 
-        <select className='meal_types'>
-          <option>  type... </option>
-          <option  value ="breakfast" onClick={() => { onMealTypesChoosen("breakfast")}}> breakfast </option>
-          <option  value ="brunch" onClick={() => { onMealTypesChoosen("brunch")}}> brunch </option>
-          <option  value ="lunch/dinner" onClick={() => { onMealTypesChoosen("lunch/dinner")}}> lunch/dinner </option>
-          <option  value ="snack" onClick={() => { onMealTypesChoosen("snack")}}> snack </option>
-          <option  value ="teatime" onClick={() => { onMealTypesChoosen("teatime")}}> teatime </option>
-        </select>
+        <Select_bar
+          mealTypes = {mealTypes}
+          onMealTypesChoosen = {setMealTypes}
+        /> 
 
         <button className='search_button' 
           id="searchButton" 
@@ -106,40 +109,47 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
             */
             e.preventDefault();
 
-            console.log('URL: '+ recipe_url);
-            console.log('User Search: '+ searchText);
+            if(searchText != null && searchText != ''  && searchText != ""){//if the search field is blank don't bother sending a querry to the API database
 
-            /*
-            * fetch method in JavaScript is used to request data from a server. The request can be of any type of API that returns the data in JSON or XML as a promise. 
-            * We start by checking that the response status is 200 before parsing the response as JSON.
-            * The then() method in JavaScript has been defined in the Promise API and is used to deal with asynchronous tasks such as an API call. 
-            * The response of a fetch() request is a Stream object, which means that when we call the json() method, a Promise is returned since the reading of the stream will happen asynchronously.
-            */
-            fetch(recipe_url).then(
-              function(response){
-                if (response.status != 200){ //if the reponse wasn't a 200(ok) then print error code
-                  console.log('Looks like there was a problem. Status Code: ' +
-                  response.status);
-                  return;
-                }
-                else{
-                  response.json().then(function(data) {
-                    console.log(data);
-                    if (data._links.next != null) onNextPageLinkFound(data._links.next); //sets the next page link
-                    onRecipeSearched(Object.assign([], data.hits)); //sets recipeResults to any array copy of just the recipe (new page link it lost)
-                  });
-                }
+              console.log('URL: '+ recipe_url);
+              console.log('User Search: '+ searchText);
+              console.log('mealTypes: ' + mealTypes);
+
+              if (mealTypes != ''){
+                recipe_url = (recipe_url + `&mealType=${mealTypes}`);
+                console.log("URL CHANGED: "+ recipe_url);
               }
-            ).catch(function(err){ //if the fetch method didn't work catch it and print error code
-              console.log('fetch Error :-S', err);
-            });
-            
 
-            //resets the search bar so it's empty
-            onSearchTextChange("");
+              /*
+              * fetch method in JavaScript is used to request data from a server. The request can be of any type of API that returns the data in JSON or XML as a promise. 
+              * We start by checking that the response status is 200 before parsing the response as JSON.
+              * The then() method in JavaScript has been defined in the Promise API and is used to deal with asynchronous tasks such as an API call. 
+              * The response of a fetch() request is a Stream object, which means that when we call the json() method, a Promise is returned since the reading of the stream will happen asynchronously.
+              */
+              fetch(recipe_url).then(
+                function(response){
+                  if (response.status != 200){ //if the reponse wasn't a 200(ok) then print error code
+                    console.log('Looks like there was a problem. Status Code: ' + response.status);
+                    onRecipeSearched("None");
+                    return;
+                  }
+                  else{
+                    response.json().then(function(data) {
+                      console.log(data);
+                      if (data._links.next != null) onNextPageLinkFound(data._links.next); //sets the next page link
+                      onRecipeSearched(Object.assign([], data.hits)); //sets recipeResults to any array copy of just the recipe (new page link it lost)
+                    });
+                  }
+                }
+              ).catch(function(err){ //if the fetch method didn't work catch it and print error code
+                console.log('fetch Error :-S', err);
+              });
+              
 
+              //resets the search bar so it's empty
+              onSearchTextChange("");
             }
-          }
+          }}
         >
           Search
         </button>          
@@ -152,12 +162,45 @@ function SearchBar({searchText, onSearchTextChange, recipe_url, onRecipeSearched
 
 
 /*
-* The Componet for the tile grid
+* The Componet for the select meal type
 *
+* renders the drop down for the meal type you want and sets is if the users picks one
+*
+* param
+* onMealTypesChoosen - uses to set the mealTypes prop
+* mealTypes - used to store the user entry for meal Type
+*/
+function Select_bar({onMealTypesChoosen, mealTypes}){
+
+  return(
+    <select 
+      className='meal_types_select'
+      value={mealTypes} // force the select's value to match the state variable
+      onChange={e => onMealTypesChoosen(e.target.value)} // update the state variable on any change!
+    >
+      <option  value = ''> type... </option>
+      <option  value ="breakfast"> breakfast </option>
+      <option  value ="brunch"> brunch </option>
+      <option  value ="lunch/dinner"> lunch/dinner </option>
+      <option  value ="snack"> snack </option>
+      <option  value ="teatime"> teatime </option>
+    </select>
+  );
+  
+}
+
+
+/*
+* The Componet for the tile grid
+* Renders the grid of items based on the search 
+* if none is found will return a heading saying this
+*
+* Param
+* recipeResults - The prop containg the array of recipes
 */
 function RecipeTileBoard({recipeResults}){
 
-  if (recipeResults != null){
+  if (recipeResults != null && recipeResults != "None"){
 
     //to display multiple similar components from a collection of data (an array) use map() 
     //map() creates a new array from calling a function for every array element.
@@ -165,7 +208,7 @@ function RecipeTileBoard({recipeResults}){
 
       <>
         <div>
-          <button className='nextPage_button'>
+          <button className='prevPage_button'>
               Prev Page
           </button>
           <button className='nextPage_button'>
@@ -182,13 +225,20 @@ function RecipeTileBoard({recipeResults}){
       </>
       
     );    
+  }else if (recipeResults == "None"){
+    return(
+      <h1> NONE FOUND </h1>
+    );
   }
 }
 
 
 /*
-* The Componet for each individual Tile
+* The Componet for the tile grid
+* Renders a single item for the recipe grid
 *
+* Param
+* recipe - the prop containing a recipes data such as link, img, name, etc.
 */
 function RecipeTile({recipe}){
 
@@ -212,11 +262,6 @@ function RecipeTile({recipe}){
 function NextPage(){
   
 }
-
-function MealTypes(){
-
-}
-
 
 
 /*

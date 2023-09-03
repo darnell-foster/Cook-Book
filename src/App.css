@@ -59,7 +59,7 @@
   background-color: #282c34;
   border: none;
   color: white;
-  padding: 5px 16px;
+  padding: 3px 15px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -91,6 +91,13 @@
   display: grid;
   grid-template-columns: 230px 230px;
   justify-content: center;
+}
+
+.meal_types_select{
+  padding: 3px 3px;
+  margin-left: 4px;
+  margin-right: 4px;
+  border-radius: 8px;
 }
 
 
